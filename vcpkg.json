@@ -1,0 +1,10 @@
+{
+  "name": "asio-condition-variable",
+  "version": "1.0.0",
+  "dependencies": [
+    "boost-asio",
+    "asio"
+  ],
+  "license": "ISC",
+  "description": "A header only c++ library that provides an async Asio Condition Variable."
+}
