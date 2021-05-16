@@ -1,6 +1,6 @@
 {
   "name": "asio-condition-variable",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "dependencies": [
     "boost-asio",
     "asio"
