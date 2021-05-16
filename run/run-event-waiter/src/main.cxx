@@ -17,10 +17,10 @@ namespace asio = boost::asio;
 static auto constexpr THREAD_COUNT = 2;
 
 using asio::awaitable;
-awaitable<void> Run(pc::event_waiter&      event_waiter,
-                    ::std::size_t duration = 2,
-                    ::std::size_t          count    = 5,
-                    ::std::size_t          start    = 5)
+awaitable<void> Run(pc::event_waiter& event_waiter,
+                    ::std::size_t     duration = 2,
+                    ::std::size_t     count    = 5,
+                    ::std::size_t     start    = 5)
 {
    using asio::co_spawn;
    using asio::detached;
@@ -79,9 +79,6 @@ int main()
       co_spawn(io_context, Run(event_waiter, 6, 10, 0), detached);
       co_spawn(io_context, Run(event_waiter, 3, 10, 10), detached);
       co_spawn(io_context, Run(event_waiter, 1, 10, 20), detached);
-      // co_spawn(io_context, Run(event_waiter, std::chrono::seconds(1), 10, 10),
-      // detached);
-      //co_spawn(io_context, Run(event_waiter, std::chrono::seconds(4), 10, 20), detached);
 
       // Wait for threads to finish
       {
