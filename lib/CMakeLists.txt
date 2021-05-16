@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 project(condition-variable-asio
-	VERSION 1.1.1
+	VERSION 1.2.0
 	DESCRIPTION
 	"A header only c++ library that provides an async Asio Condition Variable."
 	HOMEPAGE_URL  "https://github.com/pratikpc/asio-condition-variable")
