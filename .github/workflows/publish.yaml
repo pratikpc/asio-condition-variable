@@ -12,10 +12,10 @@ jobs:
       uses: papeloto/action-zip@v1
       with:
         files: lib/
-        dest: asio-cv.zip
+        dest: release.zip
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: asio-cv.zip
+        files: release.zip
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
