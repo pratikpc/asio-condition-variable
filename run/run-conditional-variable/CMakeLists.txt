@@ -3,8 +3,7 @@ project(run-conditional-variable)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#find_package(asio CONFIG REQUIRED)
-find_package(Boost 1.74 REQUIRED COMPONENTS system)
+find_package(asio CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME})
 
@@ -29,17 +28,14 @@ endif()
 target_compile_definitions(${PROJECT_NAME}
 PRIVATE
 #	Boost Asio/Beast Coroutine TS support
-	BOOST_ASIO_HAS_CO_AWAIT
-	BOOST_ASIO_HAS_STD_COROUTINE
+	ASIO_HAS_CO_AWAIT
+	ASIO_HAS_STD_COROUTINE
 # HTTP_SERVER Start in Build mode
-	#ASIO_STANDALONE
+	ASIO_STANDALONE
 	)
-
-message(INFO hello)
 
 target_link_libraries(${PROJECT_NAME}
 PRIVATE
-#	asio::asio
-Boost::system
+	asio::asio
 	pc::condition-variable-asio
 )
