@@ -9,6 +9,7 @@
 
 #   include <asio/awaitable.hpp>
 #   include <asio/co_spawn.hpp>
+#   include <asio/detached.hpp>
 #   include <asio/redirect_error.hpp>
 #   include <asio/use_awaitable.hpp>
 
@@ -17,6 +18,7 @@
 
 #   include <boost/asio/awaitable.hpp>
 #   include <boost/asio/co_spawn.hpp>
+#   include <boost/asio/detached.hpp>
 #   include <boost/asio/redirect_error.hpp>
 #   include <boost/asio/use_awaitable.hpp>
 #endif
@@ -35,6 +37,7 @@ namespace pc
       {
       };
       using asio::awaitable;
+      using asio::detached;
       using asio::use_awaitable;
    } // namespace
    template <typename T = void>
@@ -59,13 +62,17 @@ namespace pc
       {
       }
 
-      awaitable<::std::size_t> Notify() requires(std::is_void_v<type>)
+      auto Notify() requires(std::is_void_v<type>)
       {
-         return signal();
+         return signal(detached);
+      }
+      auto NotifyAsync() requires(std::is_void_v<type>)
+      {
+         return signal(use_awaitable);
       }
 
       template <typename Convertible = type>
-      awaitable<::std::size_t>
+      auto
           Notify(Convertible&& p_value) requires(!std::is_void_v<type> &&
                                                  std::is_convertible_v<Convertible, type>)
       {
@@ -73,12 +80,28 @@ namespace pc
             std::scoped_lock lock(mutex);
             value = p_value;
          }
-         return signal();
+         return signal(detached);
       }
 
-      awaitable<::std::size_t> NotifyOne()
+      template <typename Convertible = type>
+      auto NotifyAsync(Convertible&& p_value) requires(
+          !std::is_void_v<type> && std::is_convertible_v<Convertible, type>)
       {
-         return signal_once();
+         {
+            std::scoped_lock lock(mutex);
+            value = p_value;
+         }
+         return signal(use_awaitable);
+      }
+
+      auto NotifyOne()
+      {
+         return signal_once(detached);
+      }
+
+      auto NotifyOneAsync()
+      {
+         return signal_once(use_awaitable);
       }
 
       awaitable<type> operator()()
@@ -107,20 +130,22 @@ namespace pc
       }
 
     private:
-      awaitable<::std::size_t> signal()
+      template <typename Token>
+      auto signal(Token const& token)
       {
          return asio::co_spawn(
              get_executor(),
              [&]() -> asio::awaitable<::std::size_t> { co_return cancel(); },
-             use_awaitable);
+             token);
       }
+      template <typename Token>
 
-      awaitable<::std::size_t> signal_once()
+      auto signal_once(Token const& token)
       {
          return asio::co_spawn(
              get_executor(),
              [&]() -> asio::awaitable<::std::size_t> { co_return cancel_one(); },
-             use_awaitable);
+             token);
       }
    };
 } // namespace pc

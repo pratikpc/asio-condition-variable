@@ -56,17 +56,15 @@ namespace pc
 
       void Notify()
       {
-         bool empty = true;
-         {
-            std::scoped_lock lock(mutex);
-            if (counter != 0)
-            {
-               counter = counter - 1;
-               empty   = false;
-            }
-         }
+         auto const empty = notify();
          if (!empty)
-            signal_once();
+            signal_once(detached);
+      }
+      awaitable<void> NotifyAsync()
+      {
+         auto const empty = notify();
+         if (!empty)
+            co_await signal_once(use_awaitable);
       }
 
       awaitable<void> operator()()
@@ -100,15 +98,26 @@ namespace pc
             asio::detail::throw_error(ec);
          }
       }
-      void signal_once()
+      template <typename Token>
+      inline auto signal_once(Token const& token)
       {
-         asio::co_spawn(
+         return asio::co_spawn(
              get_executor(),
-             [&]() -> asio::awaitable<void> {
+             [&]() -> awaitable<void> {
                 cancel_one();
                 co_return;
              },
-             detached);
+             token);
+      }
+      inline bool notify()
+      {
+         std::scoped_lock lock(mutex);
+         if (counter != 0)
+         {
+            counter = counter - 1;
+            return false;
+         }
+         return true;
       }
    };
 } // namespace pc
