@@ -97,7 +97,7 @@ namespace pc
          if (ec != asio::error::operation_aborted)
          {
             // If not aborted, throw exception
-            throw std::exception("Should have been aborted");
+            asio::detail::throw_error(ec);
          }
       }
       void signal_once()
