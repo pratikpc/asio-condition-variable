@@ -68,7 +68,7 @@ int main()
              std::cout << "\nNotification process started. Wait for a few seconds ";
              steady_timer deadline(executor, ::std::chrono::seconds(10));
              co_await deadline.async_wait(use_awaitable);
-             co_await cv.Notify();
+             co_await cv.NotifyAsync();
              std::cout << "\n Notification Sent ";
           },
           detached);
@@ -84,7 +84,7 @@ int main()
                  << "\nSingle Notification process started. Wait for a few seconds ";
              steady_timer deadline(executor, ::std::chrono::seconds(3));
              co_await deadline.async_wait(use_awaitable);
-             co_await cv.NotifyOne();
+             co_await cv.NotifyOneAsync();
              std::cout << "\nSingle Notification Sent ";
           },
           detached);

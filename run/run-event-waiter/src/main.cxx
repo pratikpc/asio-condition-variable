@@ -43,7 +43,7 @@ awaitable<void> Run(pc::event_waiter& event_waiter,
                 steady_timer deadline(executor, ::std::chrono::seconds(duration));
                 co_await deadline.async_wait(use_awaitable);
              }
-             event_waiter.Notify();
+             co_await event_waiter.NotifyAsync();
              std::cout << "\nNotified " << i;
           },
           detached);
