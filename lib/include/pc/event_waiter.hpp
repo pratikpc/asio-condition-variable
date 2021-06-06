@@ -48,8 +48,7 @@ namespace pc
       template <typename ExecutionContext>
       event_waiter(ExecutionContext& context, ::std::size_t counter = 0) requires(
           std::is_convertible_v<ExecutionContext&, asio::execution_context&>) :
-          asio::steady_timer{context,
-                             std::chrono::high_resolution_clock::time_point::max()},
+          asio::steady_timer{context, duration::max()},
           counter{counter}
       {
       }
@@ -100,10 +99,14 @@ namespace pc
       }
       template <typename Token>
       inline auto signal_once(Token const& token)
+          -> std::conditional_t<std::is_same_v<Token, asio::detached_t>,
+                                void,
+                                asio::awaitable<void>>
       {
          return asio::co_spawn(
              get_executor(),
-             [&]() -> awaitable<void> {
+             [&]() -> awaitable<void>
+             {
                 cancel_one();
                 co_return;
              },

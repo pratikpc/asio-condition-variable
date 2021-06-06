@@ -43,11 +43,12 @@ namespace pc
    template <typename T = void>
    struct condition_variable : public asio::steady_timer
    {
-      using type = std::remove_cvref_t<T>;
+      using type       = ::std::remove_cvref_t<T>;
+      using value_type = ::std::conditional_t<!std::is_void_v<type>, type, none_t>;
 
     private:
-      std::conditional_t<!std::is_void_v<type>, type, none_t> value;
-      std::mutex                                              mutex;
+      value_type   value;
+      ::std::mutex mutex;
 
     public:
       template <typename ExecutionContext>
@@ -56,8 +57,7 @@ namespace pc
           decltype(value)&& value =
               {}) requires(std::is_convertible_v<ExecutionContext&,
                                                  asio::execution_context&>) :
-          asio::steady_timer{context,
-                             std::chrono::high_resolution_clock::time_point::max()},
+          asio::steady_timer{context, duration::max()},
           value{std::move(value)}
       {
       }
