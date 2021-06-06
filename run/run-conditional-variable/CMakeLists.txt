@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(asio CONFIG REQUIRED)
 
+if (UNIX)
+	find_package( Threads )
+endif (UNIX)
+
 add_executable(${PROJECT_NAME})
 
 file(GLOB_RECURSE LIBRARY_CXX_SOURCES src/*.cxx)
@@ -39,3 +43,10 @@ PRIVATE
 	asio::asio
 	pc::condition-variable-asio
 )
+
+if (UNIX)
+	target_link_libraries( ${PROJECT_NAME}
+		PRIVATE
+ 		${CMAKE_THREAD_LIBS_INIT} 
+	)
+endif (UNIX)
